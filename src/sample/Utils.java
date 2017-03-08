@@ -38,10 +38,24 @@ public class Utils {
      * @return
      */
     public static ImageView createArrowImageView(double width, double height, Paint stroke, Paint fill, double strokeWidth) {
-
         return new ImageView( createArrowImage(width, height, stroke, fill, strokeWidth));
-
     }
+
+    public static ImageView createGrassImageView(double x, double y){
+        return new ImageView(createGrassImage(3, 30, x, y, Color.GREENYELLOW, Color.GREEN, 0));
+    }
+
+    public static ImageView createFoxImageView(double size){
+        return createArrowImageView(size, size/2, Color.RED, Color.LIGHTGREY, 1);
+    }
+
+    public static ImageView createRabbitImageView(double size){
+        return createArrowImageView(size, size/2, Color.PINK, Color.LIGHTPINK, 1);
+    }
+
+//    public static ImageView createGrassImageView(double width, double height, double x, double y, Paint stroke, Paint fill, double strokeWidth){
+//        return new ImageView(createGrassImage(width, height, x, y, stroke, fill, strokeWidth ));
+//    }
 
     /**
      * Create an image of a right facing arrow.
@@ -74,6 +88,32 @@ public class Utils {
 
         return wi;
 
+    }
+
+
+    public static Image createGrassImage(double width, double height, double x, double y, Paint stroke, Paint fill, double strokeWidth){
+        WritableImage wi;
+
+        double grassWidth = width - strokeWidth*2;
+        double grassHeight = height - strokeWidth*2;
+
+        Polygon grass = new Polygon(x, y, x + grassWidth, y, x + grassWidth, y + grassHeight, x, y + grassHeight);
+        grass.setStrokeLineJoin(StrokeLineJoin.MITER);
+        grass.setStrokeLineCap(StrokeLineCap.SQUARE);
+        grass.setStroke(stroke);
+        grass.setFill(fill);
+        grass.setStrokeWidth(strokeWidth);
+
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setFill(Color.TRANSPARENT);
+
+        int imageWidth = (int) width;
+        int imageHeight = (int) height;
+
+        wi = new WritableImage(imageWidth, imageHeight);
+        grass.snapshot(parameters, wi);
+
+        return wi;
     }
 
 }

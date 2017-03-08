@@ -3,6 +3,7 @@ package sample.old;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import sample.ControlBar;
 
 public class MainController {
     @FXML
@@ -26,7 +27,7 @@ public class MainController {
         gamePanel.setPrefSize(800, 550);
         gamePanel.setStyle("-fx-background-color: tan;");
         gameController.setView(gamePanel);
-        controlBar = new ControlBar(gameController);
+        controlBar = new ControlBar();
 
         borderPane.setCenter(gamePanel);
         borderPane.setTop(controlBar);

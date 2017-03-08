@@ -1,4 +1,4 @@
-package sample.old;
+package sample;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,14 +12,12 @@ import javafx.scene.layout.HBox;
 public class ControlBar extends HBox {
     Button start, pause, quit;
     Slider slider1, slider2;
-    GameController gameController;
     boolean running = false;
     boolean paused = false;
 
-    public ControlBar(GameController gameController){
+    public ControlBar(){
         super(15);
 
-        this.gameController = gameController;
 
         start = new Button("Start");
         pause = new Button("Reset");
@@ -48,18 +46,17 @@ public class ControlBar extends HBox {
     }
 
     public void start(){
-        running = !running;
-        gameController.start(running);
-        start.setText(running ? "Stop" : "Start");
+        Settings.running = !Settings.running;
+        //start.setText();
     }
 
     public void pause(){
-        paused = !paused;
-        gameController.pause(paused);
-        pause.setText(paused ? "Unpause" : "Pause");
+        //paused = !paused;
+        Settings.running = !Settings.running;
+        pause.setText(Settings.running ? "Unpause" : "Pause");
     }
 
     public void quit(){
-        gameController.quit();
+
     }
 }

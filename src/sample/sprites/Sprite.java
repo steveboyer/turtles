@@ -2,6 +2,8 @@ package sample.sprites;
 
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import sample.Layer;
 import sample.Settings;
 import sample.Utils;
@@ -11,6 +13,7 @@ import sample.Vector2D;
  * Created by steve on 3/6/17.
  */
 public abstract class Sprite extends Region {
+    protected boolean remove;
 
     Vector2D location;
     Vector2D velocity;
@@ -18,7 +21,7 @@ public abstract class Sprite extends Region {
 
     double maxForce = Settings.SPRITE_MAX_FORCE;
     double maxSpeed = Settings.SPRITE_MAX_SPEED;
-
+    double energyLevel;
     Node view;
 
     // view dimensions
@@ -56,7 +59,19 @@ public abstract class Sprite extends Region {
 
     }
 
-    public abstract Node createView();
+    public Node createView(){
+        double radius = width / 2;
+
+        Circle circle = new Circle( radius);
+
+        circle.setCenterX(radius);
+        circle.setCenterY(radius);
+
+        circle.setStroke(Color.GREEN);
+        circle.setFill(Color.GREEN.deriveColor(1, 1, 1, 0.3));
+
+        return circle;
+    }
 
     public void applyForce(Vector2D force) {
         acceleration.add(force);
@@ -113,6 +128,42 @@ public abstract class Sprite extends Region {
 
     }
 
+//    public void seekFood(List<? extends Sprite> food){
+//        ArrayList<Vector2D> targets = new ArrayList<>();
+//        for(Sprite g : food){
+//            targets.add(g.getLocation());
+//        }
+//
+//        Vector2D min;
+//        double minMag = Vector2D.subtract(targets.get(0), location).magnitude();
+//
+//        for(Vector2D target : targets) {
+//            Vector2D distanceVector = Vector2D.subtract(target, location);
+//            double distance = distanceVector.magnitude();
+//
+//            if(distance < )
+//            distanceVector.normalize();
+//            if(distance < minMag){
+//                minMag = distance;
+//                min = target;
+//            }
+//        }
+//
+//
+//        // Desired vector toward closest food
+//        Vector2D desired = Vector2D.subtract(min, location);
+//
+//        // Steer toward food
+//        Vector2D steer = Vector2D.subtract(desired, velocity);
+//        applyForce(steer);
+//    }
+
+    public void patrol(){
+
+    }
+
+
+
     /**
      * Update node position
      */
@@ -142,4 +193,16 @@ public abstract class Sprite extends Region {
         location.y += y;
     }
 
+    public void markForRemoval(){
+        this.remove = true;
+    }
+
+    public boolean isToBeRemoved(){
+        return this.remove;
+    }
+
+    public double beEaten(){
+        markForRemoval();
+        return energyLevel;
+    }
 }
