@@ -3,15 +3,14 @@ package sample;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import sample.sprites.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Main extends Application {
 
@@ -19,11 +18,9 @@ public class Main extends Application {
 
     Layer playfield;
 
-    List<Attractor> allAttractors = new ArrayList<>();
-    List<Vehicle> allVehicles = new ArrayList<>();
-    List<Animal> foxes = new ArrayList<>();
-    List<Animal> rabbits = new ArrayList<>();
-    List<Grass> grass = new ArrayList<>();
+    List<Fox> foxes = new CopyOnWriteArrayList<>();
+    List<Rabbit> rabbits = new CopyOnWriteArrayList<>();
+    List<Grass> grass = new CopyOnWriteArrayList<>();
     AnimationTimer gameLoop;
 
     Vector2D mouseLocation = new Vector2D( 0, 0);
@@ -57,29 +54,12 @@ public class Main extends Application {
         // add content
         prepareGame();
 
-        // add mouse location listener
-        addListeners();
-
         // run animation loop
         startGame();
     }
 
     private void prepareGame() {
 
-        // add vehicles
-        for( int i = 0; i < Settings.VEHICLE_COUNT; i++) {
-            //addVehicles();
-        }
-//
-//        // add attractors
-        for( int i = 0; i < Settings.ATTRACTOR_COUNT; i++) {
-            //addAttractors();
-        }
-////
-//        for( int i = 0; i < Settings.VEHICLE_COUNT; i++){
-//            addAnimals();
-//        }
-//
         for(int i = 0; i  < Settings.GRASS_COUNT; i++){
             addGrass();
         }
@@ -102,20 +82,76 @@ public class Main extends Application {
             public void handle(long now) {
 
                 if(Settings.running){
-                    foxes.removeIf(Sprite::isToBeRemoved);
-                    rabbits.removeIf(Sprite::isToBeRemoved);
-                    grass.removeIf(Sprite::isToBeRemoved);
+                    for(int i = 0; i < Settings.NEW_RABBITS; i++){
+                        addRabbits();
+                        Settings.NEW_RABBITS--;
+                    }
+
+                    for(int i = 0; i < Settings.NEW_FOXES; i++){
+                        addFoxes();
+                        Settings.NEW_FOXES--;
+                    }
+
+//                    double rate = Settings.GRASS_COUNT/(grass.size());
+
+                    while(grass.size() < Settings.GRASS_COUNT &&
+                            Settings.NEW_GRASS > 0 && random.nextDouble() > 0.85 ){
+                        addGrass();
+                        Settings.NEW_GRASS--;
+                    }
+
+                    if(!grass.isEmpty()) {
+                        for (Grass g : grass) {
+                            if (g.isToBeRemoved()) {
+                                grass.remove(g);
+                                playfield.getChildren().remove(g);
+                            }
+                        }
+                    }
+
+                    if(!rabbits.isEmpty()){
+                        for(Rabbit r : rabbits){
+                            if(r.isToBeRemoved()){
+                                rabbits.remove(r);
+                                playfield.getChildren().remove(r);
+                            }
+                        }
+                    }
+
+                    if(!foxes.isEmpty()) {
+                        for (Fox f : foxes) {
+                            if (f.isToBeRemoved()) {
+                                foxes.remove(f);
+                                playfield.getChildren().remove(f);
+                            }
+                        }
+                    }
+
 
                     // seek attractor location, apply force to get towards it
                     //allVehicles.forEach(vehicle -> vehicle.seek( attractor.getLocation()));
 
                     // move sprite
                     //allVehicles.forEach(Sprite::move);
-                    rabbits.forEach(animal -> animal.seekFood(grass));
+                    rabbits.forEach(animal -> {
+                        if(animal.getCurrentEnergy() > Settings.RABBIT_ENERGY_TO_MATE){
+                            animal.seekMate(rabbits);
+                        } else {
+                            animal.seekFood(grass);
+                        }
+                    });
                     rabbits.forEach(Sprite::move);
 
-                    foxes.forEach(animal -> animal.seekFood(rabbits));
+                    foxes.forEach(animal -> {
+                        if(animal.getCurrentEnergy() > Settings.FOX_ENERGY_TO_MATE){
+                            animal.seekMate(foxes);
+                        } else {
+                            animal.seekFood(rabbits);
+                        }
+                    });
                     foxes.forEach(Sprite::move);
+
+                    if(random.nextDouble() > 0.8) System.out.println("foxes: " + foxes.size() +  " rabbits: " + rabbits.size() + " grass: " + grass.size());
 
                     // update in fx scene
                     //allVehicles.forEach(Sprite::display);
@@ -129,57 +165,6 @@ public class Main extends Application {
         gameLoop.start();
     }
 
-    /**
-     * Add single vehicle to list of vehicles and to the playfield
-     */
-    private void addVehicles() {
-
-        Layer layer = playfield;
-
-        // random location
-        double x = random.nextDouble() * layer.getWidth();
-        double y = random.nextDouble() * layer.getHeight();
-
-//        System.out.println("x: " + x + " y: " + y);
-        // dimensions
-        double width = 50;
-        double height = width / 2.0;
-
-        // create vehicle data
-        Vector2D location = new Vector2D( x,y);
-        Vector2D velocity = new Vector2D( 0,0);
-        Vector2D acceleration = new Vector2D( 0,0);
-
-        // create sprite and add to layer
-        Vehicle vehicle = new Vehicle( layer, location, velocity, acceleration, width, height);
-
-        // register vehicle
-        allVehicles.add(vehicle);
-
-    }
-
-    private void addAnimals(){
-        Layer layer = playfield;
-
-//        double x = layer.getWidth()/2;
-//        double y = layer.getHeight()/2;
-
-        double x = random.nextDouble() * layer.getWidth();
-        double y = random.nextDouble() * layer.getHeight();
-        //System.out.println("x: " +  x + " y: " + y);
-
-        double width = 10;
-        double height = width;
-
-        Vector2D location = new Vector2D(x, y);
-        Vector2D velocity = new Vector2D(random.nextInt(20), random.nextInt(20));
-        Vector2D acceleration = new Vector2D(random.nextInt(20), random.nextInt(20));
-
-        Animal a = new Fox(layer, location, velocity, acceleration, width, height);
-
-        //animals.add(a);
-    }
-
     private void addGrass(){
         Layer layer = playfield;
 
@@ -187,8 +172,8 @@ public class Main extends Application {
         double y = random.nextDouble() * layer.getHeight();
 //        System.out.println("x: " + x + " y: " + y);
 
-        double width = 4;
-        double height = 20;
+        double width = 6;
+        double height = 6;
 
         Vector2D location = new Vector2D(x, y);
         Vector2D velocity = new Vector2D(0, 0);
@@ -208,11 +193,16 @@ public class Main extends Application {
         double width = 30;
         double height = 6;
 
+        double xv = random.nextBoolean() ? -1 * random.nextDouble() : random.nextDouble();
+        double yv = random.nextBoolean() ? -1 * random.nextDouble() : random.nextDouble();
+
         Vector2D location = new Vector2D(x, y);
-        Vector2D velocity = new Vector2D(0, 0);
+        Vector2D velocity = new Vector2D(xv, yv);
+        velocity.normalize();
+        velocity.multiply(Settings.FOX_MAX_SPEED);
         Vector2D acceleration = new Vector2D(0,0);
 
-        Fox f = new Fox(layer, location, velocity, acceleration, width, height);
+        Fox f = new Fox(layer, location, velocity, acceleration, width, height, random.nextBoolean() ? Animal.Sex.Male : Animal.Sex.Female);
         foxes.add(f);
     }
 
@@ -226,49 +216,17 @@ public class Main extends Application {
         double height = 6;
 
         Vector2D location = new Vector2D(x, y);
-        Vector2D velocity = new Vector2D(0, 0);
+
+        double xv = random.nextBoolean() ? -1 * random.nextDouble() : random.nextDouble();
+        double yv = random.nextBoolean() ? -1 * random.nextDouble() : random.nextDouble();
+
+        Vector2D velocity = new Vector2D(xv,yv);
+        velocity.normalize();
+        velocity.multiply(Settings.RABBIT_MAX_SPEED);
         Vector2D acceleration = new Vector2D(0,0);
 
-        Rabbit r = new Rabbit(layer, location, velocity, acceleration, width, height);
+        Rabbit r = new Rabbit(layer, location, velocity, acceleration, width, height, random.nextBoolean() ? Animal.Sex.Male : Animal.Sex.Female);
         rabbits.add(r);
-    }
-
-    private void addAttractors() {
-
-        Layer layer = playfield;
-
-        // center attractor
-        double x = layer.getWidth() / 2;
-        double y = layer.getHeight() / 2;
-
-        // dimensions
-        double width = 100;
-        double height = 100;
-
-        // create attractor data
-        Vector2D location = new Vector2D( x,y);
-        Vector2D velocity = new Vector2D( 0,0);
-        Vector2D acceleration = new Vector2D( 0,0);
-
-        // create attractor and add to layer
-        Attractor attractor = new Attractor( layer, location, velocity, acceleration, width, height);
-
-        // register sprite
-        allAttractors.add(attractor);
-
-    }
-
-    private void addListeners() {
-
-        // capture mouse position
-        scene.addEventFilter(MouseEvent.ANY, e -> {
-            mouseLocation.set(e.getX(), e.getY());
-        });
-
-        // move attractors via mouse
-        for( Attractor attractor: allAttractors) {
-            mouseGestures.makeDraggable(attractor);
-        }
     }
 
     public static void main(String[] args) {

@@ -21,7 +21,10 @@ public abstract class Sprite extends Region {
 
     double maxForce = Settings.SPRITE_MAX_FORCE;
     double maxSpeed = Settings.SPRITE_MAX_SPEED;
-    double energyLevel;
+
+    protected double currentEnergy;       // Energy remaining before dying
+
+
     Node view;
 
     // view dimensions
@@ -35,8 +38,9 @@ public abstract class Sprite extends Region {
 
     Layer layer = null;
 
-    public Sprite( Layer layer, Vector2D location, Vector2D velocity, Vector2D acceleration, double width, double height) {
+    public abstract double getEnergyUsageRate();
 
+    public Sprite( Layer layer, Vector2D location, Vector2D velocity, Vector2D acceleration, double width, double height) {
         this.layer = layer;
 
         this.location = location;
@@ -56,9 +60,9 @@ public abstract class Sprite extends Region {
 
         // add this node to layer
         layer.getChildren().add( this);
-
     }
 
+    // Return default shape of a green circle
     public Node createView(){
         double radius = width / 2;
 
@@ -73,8 +77,27 @@ public abstract class Sprite extends Region {
         return circle;
     }
 
+    public abstract void interactWith(Sprite other);
+
     public void applyForce(Vector2D force) {
         acceleration.add(force);
+    }
+
+    public double getCurrentEnergy(){
+        return this.currentEnergy;
+    }
+
+    public final void useEnergy(){
+        this.currentEnergy -= getEnergyUsageRate();
+        if(this.currentEnergy < 0) markForRemoval();
+    }
+
+    public final void useEnergyMating(){
+        double newHealth = currentEnergy - 5*getEnergyUsageRate();
+        if(newHealth < 0){
+            newHealth = 2;
+        }
+        this.currentEnergy = newHealth;
     }
 
     public void move() {
@@ -87,6 +110,18 @@ public abstract class Sprite extends Region {
 
         // change location depending on velocity
         location.add(velocity);
+
+        if(location.x < 0){
+            location.x = location.x + Settings.SCENE_WIDTH;
+        } else if(location.x > Settings.SCENE_WIDTH){
+            location.x = location.x - Settings.SCENE_WIDTH;
+        }
+
+        if(location.y < 0){
+            location.y = location.y + Settings.SCENE_HEIGHT;
+        } else if(location.y > Settings.SCENE_HEIGHT){
+            location.y = location.y - Settings.SCENE_HEIGHT;
+        }
 
         // angle: towards velocity (ie target)
         angle = velocity.heading2D();
@@ -125,54 +160,15 @@ public abstract class Sprite extends Region {
         steer.limit(maxForce);
 
         applyForce(steer);
-
     }
-
-//    public void seekFood(List<? extends Sprite> food){
-//        ArrayList<Vector2D> targets = new ArrayList<>();
-//        for(Sprite g : food){
-//            targets.add(g.getLocation());
-//        }
-//
-//        Vector2D min;
-//        double minMag = Vector2D.subtract(targets.get(0), location).magnitude();
-//
-//        for(Vector2D target : targets) {
-//            Vector2D distanceVector = Vector2D.subtract(target, location);
-//            double distance = distanceVector.magnitude();
-//
-//            if(distance < )
-//            distanceVector.normalize();
-//            if(distance < minMag){
-//                minMag = distance;
-//                min = target;
-//            }
-//        }
-//
-//
-//        // Desired vector toward closest food
-//        Vector2D desired = Vector2D.subtract(min, location);
-//
-//        // Steer toward food
-//        Vector2D steer = Vector2D.subtract(desired, velocity);
-//        applyForce(steer);
-//    }
-
-    public void patrol(){
-
-    }
-
-
 
     /**
      * Update node position
      */
     public void display() {
-
         relocate(location.x - centerX, location.y - centerY);
 
         setRotate(Math.toDegrees( angle));
-
     }
 
     public Vector2D getVelocity() {
@@ -197,12 +193,11 @@ public abstract class Sprite extends Region {
         this.remove = true;
     }
 
-    public boolean isToBeRemoved(){
-        return this.remove;
+    public void updateState(){
+
     }
 
-    public double beEaten(){
-        markForRemoval();
-        return energyLevel;
+    public boolean isToBeRemoved(){
+        return this.remove;
     }
 }

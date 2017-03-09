@@ -12,5 +12,15 @@ public class Attractor extends Sprite {
         super(layer, location, velocity, acceleration, width, height);
     }
 
+    @Override
+    public void interactWith(Sprite other) {
+
+    }
+
+    @Override
+    public double getEnergyUsageRate() {
+        return 0;
+    }
+
 
 }

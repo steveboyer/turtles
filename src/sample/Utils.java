@@ -9,6 +9,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+import sample.sprites.Animal;
 
 /**
  * Created by steve on 3/6/17.
@@ -45,12 +46,20 @@ public class Utils {
         return new ImageView(createGrassImage(3, 30, x, y, Color.GREENYELLOW, Color.GREEN, 0));
     }
 
+    public static ImageView createFoxImageView(double size, Animal.Sex sex){
+        return createArrowImageView(size, size/2, Color.BLACK, sex == Animal.Sex.Female ? Color.WHITE : Color.RED, 1);
+    }
+
     public static ImageView createFoxImageView(double size){
-        return createArrowImageView(size, size/2, Color.RED, Color.LIGHTGREY, 1);
+        return createArrowImageView(size, size/2, Color.BLACK, Color.RED, 1);
+    }
+
+    public static ImageView createRabbitImageView(double size, Animal.Sex sex){
+        return createArrowImageView(size, size/2, Color.BLACK, sex == Animal.Sex.Female ? Color.WHITE : Color.GREY, 1);
     }
 
     public static ImageView createRabbitImageView(double size){
-        return createArrowImageView(size, size/2, Color.PINK, Color.LIGHTPINK, 1);
+        return createArrowImageView(size, size/2, Color.BLACK, Color.GREY, 1);
     }
 
 //    public static ImageView createGrassImageView(double width, double height, double x, double y, Paint stroke, Paint fill, double strokeWidth){
