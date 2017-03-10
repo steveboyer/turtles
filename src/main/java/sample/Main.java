@@ -24,6 +24,7 @@ public class Main extends Application {
     private Scene scene;
     private Long last = (long)0;//Calendar.getInstance().getTimeInMillis();
     private Stage stage;
+    private ControlBar controlBar = new ControlBar();
 
     @Override
     public void start(Stage primaryStage) {
@@ -40,7 +41,7 @@ public class Main extends Application {
         // create containers
         BorderPane root = new BorderPane();
         root.setCenter(layerPane);
-        root.setBottom(new ControlBar());
+        root.setBottom(controlBar);
 
         scene = new Scene(root, Settings.SCENE_WIDTH, Settings.SCENE_HEIGHT);
 
@@ -89,8 +90,7 @@ public class Main extends Application {
                         Settings.NEW_FOXES--;
                     }
 
-                    while(grass.size() < Settings.GRASS_COUNT &&
-                            Settings.NEW_GRASS > 0 && random.nextDouble() > 0.85 ){
+                    while(grass.size() < Settings.GRASS_COUNT && random.nextDouble() > 0.7 ){
                         addGrass();
                         Settings.NEW_GRASS--;
                     }
@@ -141,10 +141,11 @@ public class Main extends Application {
 
                     foxes.forEach(Sprite::move);
 
-                    if(random.nextDouble() > 0.8)
-                        System.out.println("foxes: " + foxes.size() +
-                                " rabbits: " + rabbits.size() +
-                                " grass: " + grass.size());
+                    controlBar.updatePopulations(foxes.size(), rabbits.size(), grass.size());
+//                    if(random.nextDouble() > 0.8)
+//                        System.out.println("foxes: " + foxes.size() +
+//                                " rabbits: " + rabbits.size() +
+//                                " grass: " + grass.size());
 
                     // update in fx scene
                     rabbits.forEach(Sprite::display);

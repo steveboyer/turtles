@@ -67,7 +67,7 @@ public abstract class Animal extends Sprite {
         seekClosest(others, getMateDetectionRadius(), getMateRadius(), true);
     }
 
-    public void seekClosest(List<? extends Sprite> others, double radiusDetect, double radiusInteract, boolean mating ){
+    private void seekClosest(List<? extends Sprite> others, double radiusDetect, double radiusInteract, boolean mating ){
         if(others.isEmpty()) return;
         ArrayList<SpriteDistance> reduced = new ArrayList<>();
 

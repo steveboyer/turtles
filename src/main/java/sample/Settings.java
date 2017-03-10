@@ -8,9 +8,9 @@ public class Settings {
     public static final double SCENE_WIDTH = 1280;
     public static final double SCENE_HEIGHT = 600;
 
-    static final int FOX_COUNT = 8;
+    static final int FOX_COUNT = 4;
     static final int RABBIT_COUNT = 8;
-    static final int GRASS_COUNT = 100;
+    static final int GRASS_COUNT = 500;
 
     public static final double SPRITE_MAX_SPEED = 2;
     public static final double SPRITE_MAX_FORCE = 0.1;
@@ -21,14 +21,14 @@ public class Settings {
     // Radii
     public static final double FOX_FOOD_DETECTION_RADIUS = 35;
     public static final double FOX_FOOD_EAT_RADIUS = 4;
-    public static final double FOX_MATE_DETECTION_RADIUS = 15;
+    public static final double FOX_MATE_DETECTION_RADIUS = 20;
     public static final double FOX_MATE_RADIUS = 4;
 
     // Energies
     public static final double FOX_MAX_ENERGY = 7;
     public static final double FOX_STARTING_ENERGY = 7;
     public static final double FOX_ENERGY_RATE  = 0.01;
-    public static final double FOX_ENERGY_TO_MATE = 3;
+    public static volatile double FOX_ENERGY_TO_MATE = 3;
     public static final double FOX_ENERGY_HUNGRY = 4;
 
 
@@ -37,7 +37,7 @@ public class Settings {
 
     // Radii
     public static final double RABBIT_FOOD_DETECTION_RADIUS = 30;
-    public static final double RABBIT_FOOD_EAT_RADIUS = 5.0;
+    public static final double RABBIT_FOOD_EAT_RADIUS = 2.0;
     public static final double RABBIT_MATE_DETECTION_RADIUS = 30;
     public static final double RABBIT_MATE_RADIUS = 3;
 
@@ -45,7 +45,7 @@ public class Settings {
     public static final double RABBIT_MAX_ENERGY = 5.0;
     public static final double RABBIT_STARTING_ENERGY = 3.0;
     public static final double RABBIT_ENERGY_RATE = 0.0022;
-    public static final double RABBIT_ENERGY_TO_MATE = 1.8;
+    public static volatile double RABBIT_ENERGY_TO_MATE = 2.8;
 
     public static final double RABBIT_AS_FOOD_ENERGY = 4;
     public static final double GRASS_AS_FOOD_ENERGY = 0.9;
