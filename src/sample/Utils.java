@@ -23,7 +23,6 @@ public class Utils {
     /**
      * Create an imageview of a right facing arrow.
      * @param size The width. The height is calculated as width / 2.0.
-     * @param height
      * @return
      */
     public static ImageView createArrowImageView( double size) {
@@ -47,7 +46,7 @@ public class Utils {
     }
 
     public static ImageView createFoxImageView(double size, Animal.Sex sex){
-        return createArrowImageView(size, size/2, Color.BLACK, sex == Animal.Sex.Female ? Color.WHITE : Color.RED, 1);
+        return createArrowImageView(size, size/2, Color.BLACK, Color.RED, 1);
     }
 
     public static ImageView createFoxImageView(double size){
@@ -55,7 +54,7 @@ public class Utils {
     }
 
     public static ImageView createRabbitImageView(double size, Animal.Sex sex){
-        return createArrowImageView(size, size/2, Color.BLACK, sex == Animal.Sex.Female ? Color.WHITE : Color.GREY, 1);
+        return createArrowImageView(size, size/2, Color.BLACK, Color.GREY, 1);
     }
 
     public static ImageView createRabbitImageView(double size){

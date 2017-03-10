@@ -8,29 +8,28 @@ public class Settings {
     public static final double SCENE_WIDTH = 1280;
     public static final double SCENE_HEIGHT = 600;
 
-
-
-    public static final int FOX_COUNT = 8;
-    public static final int RABBIT_COUNT = 8;
-    public static final int GRASS_COUNT = 300;
+    static final int FOX_COUNT = 8;
+    static final int RABBIT_COUNT = 8;
+    static final int GRASS_COUNT = 100;
 
     public static final double SPRITE_MAX_SPEED = 2;
     public static final double SPRITE_MAX_FORCE = 0.1;
 
-    public static final double FOX_MAX_SPEED = 2;
+    public static final double FOX_MAX_SPEED = 4;
     // @TODO Force, other speeds
 
     // Radii
     public static final double FOX_FOOD_DETECTION_RADIUS = 35;
-    public static final double FOX_FOOD_EAT_RADIUS = 2;
-    public static final double FOX_MATE_DETECTION_RADIUS = 30;
-    public static final double FOX_MATE_RADIUS = 3;
+    public static final double FOX_FOOD_EAT_RADIUS = 4;
+    public static final double FOX_MATE_DETECTION_RADIUS = 15;
+    public static final double FOX_MATE_RADIUS = 4;
 
     // Energies
     public static final double FOX_MAX_ENERGY = 7;
-    public static final double FOX_STARTING_ENERGY = 4.29;
-    public static final double FOX_ENERGY_RATE  = 0.011;
-    public static final double FOX_ENERGY_TO_MATE = 3.11;
+    public static final double FOX_STARTING_ENERGY = 7;
+    public static final double FOX_ENERGY_RATE  = 0.01;
+    public static final double FOX_ENERGY_TO_MATE = 3;
+    public static final double FOX_ENERGY_HUNGRY = 4;
 
 
     public static final double RABBIT_MAX_SPEED = 1.25;
@@ -46,9 +45,9 @@ public class Settings {
     public static final double RABBIT_MAX_ENERGY = 5.0;
     public static final double RABBIT_STARTING_ENERGY = 3.0;
     public static final double RABBIT_ENERGY_RATE = 0.0022;
-    public static final double RABBIT_AS_FOOD_ENERGY = 4;
     public static final double RABBIT_ENERGY_TO_MATE = 1.8;
 
+    public static final double RABBIT_AS_FOOD_ENERGY = 4;
     public static final double GRASS_AS_FOOD_ENERGY = 0.9;
 
     // Track births

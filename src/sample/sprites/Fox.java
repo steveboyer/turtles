@@ -67,7 +67,7 @@ public class Fox extends Animal {
     public void interactWith(Sprite sprite) {
         if(sprite instanceof Fox){
             if(((Fox)sprite).sex != sex){
-                if(random.nextDouble() > 0.96) {
+                if(random.nextDouble() > 0.9) {
                     Settings.NEW_FOXES += 1;
                 }
                 useEnergyMating();
@@ -76,7 +76,6 @@ public class Fox extends Animal {
             }
         } else if (sprite instanceof Food) {
             eat((Food)sprite);
-            System.out.print("Fox eats rabbit");
         }
     }
 

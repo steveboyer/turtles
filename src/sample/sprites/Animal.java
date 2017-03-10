@@ -3,10 +3,7 @@ package sample.sprites;
 import sample.Layer;
 import sample.Vector2D;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by steve on 3/7/17.
@@ -16,24 +13,30 @@ public abstract class Animal extends Sprite {
     protected Random random;
 
     public enum Sex {Male, Female}
-    public enum State { SEARCHING_FOOD,
-                        SEARCHING_MATE,
-                        EATING, MATING,
-                        EATEN, STARVED,
-                        STARVING}
+    public State state;
+    protected double currentEnergy;       // Energy remaining before dying
 
+    public enum State {
+        SEARCHING_FOOD, STARVING_SEARCHING_FOOD,
+        SEARCHING_MATE,
+        EATING, MATING,
+        DEAD_EATEN, DEAD_STARVED, DEAD_OLD
+    }
 
     public Sex sex;
 
     public Animal(Layer layer, Vector2D location, Vector2D velocity, Vector2D acceleration, double width, double height) {
         super(layer, location, velocity, acceleration, width, height);
-        random = new Random();
+        this.random = new Random();
+        this.currentEnergy = getStartingHealth();
+        this.sex = random.nextBoolean() ? Sex.Female : Sex.Male;
     }
 
     public Animal(Layer layer, Vector2D location, Vector2D velocity, Vector2D acceleration, double width, double height, Sex sex) {
         super(layer, location, velocity, acceleration, width, height);
         random = new Random();
         this.sex = sex;
+        this.currentEnergy = getStartingHealth();
     }
 
     public abstract double getFoodDetectionRadius();
@@ -48,7 +51,7 @@ public abstract class Animal extends Sprite {
     public void move(){
         super.move();
         useEnergy();
-        updateState();
+        //updateState();
     }
 
     public abstract void updateState();
@@ -61,41 +64,79 @@ public abstract class Animal extends Sprite {
     }
 
     public void seekMate(List<? extends Sprite> others){
-        seekClosest(others, getMateDetectionRadius(), getMateRadius(),1);
+        seekClosest(others, getMateDetectionRadius(), getMateRadius(), true);
     }
 
-    public void seekClosest(List<? extends Sprite> others, double radiusDetect, double radiusInteract, int x){
+    public void seekClosest(List<? extends Sprite> others, double radiusDetect, double radiusInteract, boolean mating ){
         if(others.isEmpty()) return;
+        ArrayList<SpriteDistance> reduced = new ArrayList<>();
 
-        others.sort(new DistanceComparator());
-        Sprite[] sprites = new Sprite[others.size()];
-        Arrays.parallelSort(others.toArray(sprites), new DistanceComparator());
-        Vector2D shortest = Vector2D.subtract(sprites[0].getLocation(), location);
-        double d = shortest.magnitude();
-        shortest.normalize();
-
-        if(d < radiusInteract){
-            try {
-                interactWith(others.get(x));
-            } catch (ArrayIndexOutOfBoundsException ex){
-                System.out.println("All deads");
+        others.forEach(sprite -> {
+            Vector2D vector2D = Vector2D.subtract(sprite.getLocation(), location);
+            double magnitude = vector2D.magnitude();
+            if(magnitude <= radiusDetect && magnitude > 0 ){
+                reduced.add(new SpriteDistance(magnitude, sprite, vector2D));
             }
-        } else if(d < radiusDetect){
-            shortest.multiply(getMaxSpeed());
-            Vector2D steer = Vector2D.subtract(shortest, velocity);
+        });
+
+        reduced.sort(new DistanceComparator());
+
+        SpriteDistance[] sprites = new SpriteDistance[reduced.size()];
+
+        //Arrays.parallelSort(reduced.toArray(sprites), new DistanceComparator());
+
+        if(reduced.isEmpty()) return;
+        SpriteDistance closest = reduced.get(0);
+
+        if(closest.distance < radiusInteract){
+            interactWith(closest.sprite);
+        } else {
+            closest.vector.normalize();
+            closest.vector.multiply(getMaxSpeed());
+            Vector2D steer = Vector2D.subtract(closest.vector, velocity);
             applyForce(steer);
         }
     }
 
-    public void seekFood(List<? extends Sprite> food){
-        seekClosest(food, getFoodDetectionRadius(), getFoodEatRadius(), 0);
+    class SpriteDistance{
+        double distance;
+        Vector2D vector;
+        Sprite sprite;
+
+        public SpriteDistance(double distance, Sprite sprite, Vector2D vector){
+            this.distance = distance;
+            this.sprite = sprite;
+            this.vector = vector;
+        }
     }
 
-    class DistanceComparator implements Comparator<Sprite> {
+    public double getCurrentEnergy(){
+        return this.currentEnergy;
+    }
+
+
+    public void seekFood(List<? extends Sprite> food){
+        seekClosest(food, getFoodDetectionRadius(), getFoodEatRadius(), false);
+    }
+
+    public final void useEnergy(){
+        this.currentEnergy -= getEnergyUsageRate();
+        if(this.currentEnergy < 0) markForRemoval();
+    }
+
+    public final void useEnergyMating(){
+        double newHealth = currentEnergy - 5*getEnergyUsageRate();
+        if(newHealth < 0){
+            newHealth = 2;
+        }
+        this.currentEnergy = newHealth;
+    }
+
+    class DistanceComparator implements Comparator<SpriteDistance> {
         @Override
-        public int compare(Sprite lhs, Sprite rhs) {
-            double mLhs = Vector2D.subtract(lhs.getLocation(), location).magnitude();
-            double mRhs = Vector2D.subtract(rhs.getLocation(), location).magnitude();
+        public int compare(SpriteDistance lhs, SpriteDistance rhs) {
+            double mLhs = lhs.distance;
+            double mRhs = rhs.distance;
 
             if (mRhs < mLhs)
                 return 1;

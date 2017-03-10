@@ -13,16 +13,15 @@ import sample.Vector2D;
  * Created by steve on 3/6/17.
  */
 public abstract class Sprite extends Region {
-    protected boolean remove;
+    protected volatile boolean remove;
 
     Vector2D location;
     Vector2D velocity;
     Vector2D acceleration;
 
-    double maxForce = Settings.SPRITE_MAX_FORCE;
-    double maxSpeed = Settings.SPRITE_MAX_SPEED;
+    private double maxForce = Settings.SPRITE_MAX_FORCE;
+    private double maxSpeed = Settings.SPRITE_MAX_SPEED;
 
-    protected double currentEnergy;       // Energy remaining before dying
 
 
     Node view;
@@ -83,25 +82,7 @@ public abstract class Sprite extends Region {
         acceleration.add(force);
     }
 
-    public double getCurrentEnergy(){
-        return this.currentEnergy;
-    }
-
-    public final void useEnergy(){
-        this.currentEnergy -= getEnergyUsageRate();
-        if(this.currentEnergy < 0) markForRemoval();
-    }
-
-    public final void useEnergyMating(){
-        double newHealth = currentEnergy - 5*getEnergyUsageRate();
-        if(newHealth < 0){
-            newHealth = 2;
-        }
-        this.currentEnergy = newHealth;
-    }
-
     public void move() {
-
         // set velocity depending on acceleration
         velocity.add(acceleration);
 
@@ -109,7 +90,7 @@ public abstract class Sprite extends Region {
         velocity.limit(maxSpeed);
 
         // change location depending on velocity
-        location.add(velocity);
+        location.add(velocity );
 
         if(location.x < 0){
             location.x = location.x + Settings.SCENE_WIDTH;

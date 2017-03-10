@@ -26,7 +26,59 @@ public class Rabbit extends Animal implements Food {
 
     @Override
     public void updateState() {
-
+        State nextState;
+        switch (state){
+            case SEARCHING_FOOD:
+                // if found food
+                    // eat
+                // else
+                    // if hungry
+                        // search for food
+                    // else
+                        // search for mate
+                nextState = State.SEARCHING_FOOD;
+                break;
+            case STARVING_SEARCHING_FOOD:
+                // Energy usage rate down
+                // if found food
+                    // eat
+                // else
+                    // search for food
+                nextState = State.SEARCHING_FOOD;
+                break;
+            case SEARCHING_MATE:
+                // if found mate
+                    // fuck
+                // else
+                    // H* ? SEARCHING_FOOD : SEARCHING_MATE
+                nextState = State.SEARCHING_FOOD;
+                break;
+            case EATING:
+                // Set velocity 0 until done
+                // Energy rate 0 until done
+                // Set velocity normal
+                // H*
+                nextState = State.SEARCHING_FOOD;
+                break;
+            case MATING:
+                // Set velocity 0 until done
+                // Set velocity normal
+                // H*
+                nextState = State.SEARCHING_FOOD;
+                break;
+            case DEAD_EATEN:
+                nextState = State.DEAD_EATEN;
+                break;
+            case DEAD_OLD:
+                nextState = State.DEAD_OLD;
+                break;
+            case DEAD_STARVED:
+                nextState = State.DEAD_STARVED;
+                break;
+            default:
+                throw new RuntimeException();
+        }
+        state = nextState;
     }
 
     @Override
