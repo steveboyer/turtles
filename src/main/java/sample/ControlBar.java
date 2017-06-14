@@ -1,8 +1,12 @@
 package sample;
 
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -53,7 +57,15 @@ public class ControlBar extends HBox {
         slider2.setShowTickMarks(true);
         slider2.setMajorTickUnit(10);
         slider2.setMinorTickCount(20);
+        ObservableList<String> options =
+                FXCollections.observableArrayList(
+                        "Mating min."
+                );
 
+        ComboBox comboBox_1 = new ComboBox<>(options);
+        comboBox_1.setMaxHeight(15);
+        ComboBox comboBox_2 = new ComboBox<>(options);
+        comboBox_2.setMaxHeight(15);
         Text slider_1_name = new Text("Slider\t"),
                 slider_2_name = new Text("Slider\t");
         Text slider_1_value = new Text("0000\t"),
@@ -64,10 +76,10 @@ public class ControlBar extends HBox {
         slider_1_value.setStroke(Color.WHITE);
         slider_2_value.setStroke(Color.WHITE);
 
-        HBox label_slider_1 = new HBox(slider_1_name, slider_1_value, slider1);
+        HBox label_slider_1 = new HBox(comboBox_1, slider_1_value, slider1);
         insets = new Insets(5,0,0,0);//15
         label_slider_1.setPadding(insets);
-        HBox label_slider_2 = new HBox(slider_2_name, slider_2_value, slider2);
+        HBox label_slider_2 = new HBox(comboBox_2, slider_2_value, slider2);
         label_slider_2.setPadding(insets);
         VBox sliders = new VBox(label_slider_1, label_slider_2);
 
@@ -75,7 +87,7 @@ public class ControlBar extends HBox {
         rabbits.setStroke(Color.GREY);
         grass.setStroke(Color.GREEN);
 
-        slider1.valueProperty().addListener((ov, old_val, new_val) -> {
+        slider1.valueProperty().addListener((ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
             Settings.FOX_ENERGY_TO_MATE = new_val.doubleValue();
             slider_1_value.setText(String.format("%.5f", new_val));
         });
@@ -95,6 +107,7 @@ public class ControlBar extends HBox {
         setStyle("-fx-background-color: black; -fx-border-color: black; -fx-border-insets: 0,1,1,1");
     }
 
+    // Toggle paused and update text
     public void start_pause(){
         Settings.running = !Settings.running;
         start_pause.setText(Settings.running ? "PAUSE" : "START");
@@ -109,12 +122,14 @@ public class ControlBar extends HBox {
         System.exit(1);
     }
 
+    // Update text fields for each populaiton set
     public void updatePopulations(int numFoxes, int numRabbits, int numGrass){
         foxes.setText("FOXES:\t\t" + getPopString(numFoxes));
         rabbits.setText("RABBITS:\t\t" + getPopString(numRabbits));
         grass.setText("GRASS:\t\t" + getPopString(numGrass));
     }
 
+    // Set the correct number of leading 0s
     public String getPopString(int num){
         if(num < 10){
             return "000" + Integer.toString(num);

@@ -15,11 +15,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Main extends Application {
     static Random random = new Random();
+    // CopyOnWriteArrayList is thread safe
     static CopyOnWriteArrayList<Calendar> stamps;
-    private Layer playfield;
+    private Layer playField;
+
+    // Sprites
     private List<Fox> foxes = new CopyOnWriteArrayList<>();
     private List<Rabbit> rabbits = new CopyOnWriteArrayList<>();
     private List<Grass> grass = new CopyOnWriteArrayList<>();
+
     private AnimationTimer gameLoop;
     private Scene scene;
     private Long last = (long)0;//Calendar.getInstance().getTimeInMillis();
@@ -31,11 +35,11 @@ public class Main extends Application {
         primaryStage.setMinHeight(680);
 
         // playfield for our Sprites
-        playfield = new Layer( Settings.SCENE_WIDTH, Settings.SCENE_HEIGHT);
+        playField = new Layer( Settings.SCENE_WIDTH, Settings.SCENE_HEIGHT);
 
         // entire game as layers
         Pane layerPane = new Pane();
-        layerPane.getChildren().addAll(playfield);
+        layerPane.getChildren().addAll(playField);
         layerPane.setStyle("-fx-border-color: black");
 
         // create containers
@@ -99,7 +103,7 @@ public class Main extends Application {
                         for (Grass g : grass) {
                             if (g.isToBeRemoved()) {
                                 grass.remove(g);
-                                playfield.getChildren().remove(g);
+                                playField.getChildren().remove(g);
                             }
                         }
                     }
@@ -108,7 +112,7 @@ public class Main extends Application {
                         for (Fox f : foxes) {
                             if (f.isToBeRemoved()) {
                                 foxes.remove(f);
-                                playfield.getChildren().remove(f);
+                                playField.getChildren().remove(f);
                             }
                         }
                     }
@@ -117,7 +121,7 @@ public class Main extends Application {
                         for(Rabbit r : rabbits){
                             if(r.isToBeRemoved()){
                                 rabbits.remove(r);
-                                playfield.getChildren().remove(r);
+                                playField.getChildren().remove(r);
                             }
                         }
                     }
@@ -159,7 +163,7 @@ public class Main extends Application {
     }
 
     private void addGrass(){
-        Layer layer = playfield;
+        Layer layer = playField;
 
         double x = random.nextDouble() * layer.getWidth();
         double y = random.nextDouble() * layer.getHeight();
@@ -177,7 +181,7 @@ public class Main extends Application {
     }
 
     private void addFoxes(long time){
-        Layer layer = playfield;
+        Layer layer = playField;
 
         double x = random.nextDouble() * layer.getWidth();
         double y = random.nextDouble() * layer.getHeight();
@@ -200,7 +204,7 @@ public class Main extends Application {
     }
 
     private void addRabbits(long time){
-        Layer layer = playfield;
+        Layer layer = playField;
 
         double x = random.nextDouble() * layer.getWidth();
         double y = random.nextDouble() * layer.getHeight();
